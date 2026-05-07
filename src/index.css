@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-flip: flip 0.4s linear infinite;
+  
+  @keyframes flip {
+    0% { transform: scale(1) rotateY(0deg); }
+    50% { transform: scale(1.2) rotateY(180deg); }
+    100% { transform: scale(1) rotateY(360deg); }
+  }
+}

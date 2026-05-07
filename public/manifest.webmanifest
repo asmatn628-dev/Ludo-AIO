@@ -1,0 +1,16 @@
+{
+  "name": "Ludo Universe",
+  "short_name": "Ludo",
+  "description": "Multiplayer Ludo with Bots and Saved Games",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "ludo_pwa_icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

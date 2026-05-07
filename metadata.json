@@ -1,0 +1,6 @@
+{
+  "name": "Ludo Universe",
+  "description": "Cross-platform Ludo game for Mobile and TV. Features Classic, Blitz, Quick, and Master modes with Multiplayer and Bot support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
