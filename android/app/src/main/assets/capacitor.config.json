@@ -1,0 +1,8 @@
+{
+	"appId": "com.ludo.universe",
+	"appName": "Ludo Universe",
+	"webDir": "dist",
+	"server": {
+		"androidScheme": "https"
+	}
+}

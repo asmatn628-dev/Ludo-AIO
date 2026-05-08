@@ -22,6 +22,7 @@ export interface LudoState {
   winner: PlayerColor | null;
   isMoving: boolean;
   isRolling: boolean;
+  earnedExtraRoll: boolean;
   savedGames: SavedGame[];
 
   // Actions
@@ -65,6 +66,7 @@ export const useGameStore = create<LudoState>()(
       winner: null,
       isMoving: false,
       isRolling: false,
+      earnedExtraRoll: false,
       savedGames: [],
 
       setGameState: (state) => set({ gameState: state }),
@@ -96,6 +98,7 @@ export const useGameStore = create<LudoState>()(
           hasRolled: false,
           winner: null,
           isRolling: false,
+          earnedExtraRoll: false,
         });
         playSound('match');
       },
@@ -253,7 +256,6 @@ export const useGameStore = create<LudoState>()(
 
         const winTokensNeeded = (gameMode === "quick" || gameMode === "blitz") ? 1 : 4;
         const homeTokens = finalPlayers[finalPlayerIdx].tokens.filter(t => t.state === TokenState.HOME).length;
-        let winner = get().winner;
         if (homeTokens >= winTokensNeeded) {
            if (isTeamMode) {
               const teammates = finalPlayers.filter(p => {
@@ -263,47 +265,75 @@ export const useGameStore = create<LudoState>()(
                         (team2.includes(playerColor) && team2.includes(p.color));
               });
               const bothFinished = teammates.every(p => p.tokens.filter(t => t.state === TokenState.HOME).length >= winTokensNeeded);
-              if (bothFinished) {
-                 winner = playerColor;
+              if (bothFinished && !teammates[0].rank) {
+                 const rank = finalPlayers.filter(p => p.rank).length > 0 ? 2 : 1; 
+                 teammates.forEach(t => t.rank = rank);
                  playSound('win');
               }
            } else {
-              winner = playerColor;
-              playSound('win');
+              if (!finalPlayers[finalPlayerIdx].rank) {
+                  const rank = finalPlayers.filter(p => p.rank).length + 1;
+                  finalPlayers[finalPlayerIdx].rank = rank;
+                  playSound('win');
+              }
            }
         }
 
-        set({ players: finalPlayers, winner, isMoving: false });
+        const activePlayers = finalPlayers.filter(p => p.isActive);
+        const playersPlaying = activePlayers.filter(p => !p.rank);
+        const rankCount = activePlayers.filter(p => p.rank).length;
         
-        if (winner) {
+        let shouldFinish = false;
+        
+        if (isTeamMode) {
+            shouldFinish = rankCount >= 2; // Team 1 or Team 2 won
+        } else {
+            const allRemainingAreBots = playersPlaying.length > 0 && playersPlaying.every(p => p.isBot);
+            if (playersPlaying.length <= 1 || allRemainingAreBots) {
+                shouldFinish = true;
+                if (playersPlaying.length > 0) {
+                   playersPlaying.sort((a, b) => {
+                       const progressA = a.tokens.reduce((sum, t) => sum + (t.state === TokenState.HOME ? 100 : t.state === TokenState.HOME_PATH ? 60 + t.position : t.state === TokenState.ACTIVE ? t.position : 0), 0);
+                       const progressB = b.tokens.reduce((sum, t) => sum + (t.state === TokenState.HOME ? 100 : t.state === TokenState.HOME_PATH ? 60 + t.position : t.state === TokenState.ACTIVE ? t.position : 0), 0);
+                       return progressB - progressA;
+                   });
+                   let nextRank = activePlayers.filter(p => p.rank).length + 1;
+                   playersPlaying.forEach(p => {
+                      p.rank = nextRank++;
+                   });
+                }
+            }
+        }
+
+        set({ players: finalPlayers, isMoving: false });
+        
+        if (shouldFinish) {
           set({ gameState: "finished" });
           return;
         }
 
         if (killed || currentTokenState === TokenState.HOME) {
-           if (get().diceValues.length === 0) {
-               set({ hasRolled: false, diceValue: null });
-               playSound('turn');
-               return;
-           }
+           set({ earnedExtraRoll: true });
         }
 
         setTimeout(() => {
            if (get().diceValues.length > 0) {
                get().checkAutoMove();
            } else {
-               if (killed || currentTokenState === TokenState.HOME) {
-                   set({ hasRolled: false, diceValue: null });
-                   playSound('turn');
-               } else {
-                   get().nextTurn();
-               }
+               get().nextTurn();
            }
         }, 300);
       },
 
       nextTurn: () => {
-        const { players, turnIndex, gameMode } = get();
+        const { players, turnIndex, gameMode, earnedExtraRoll } = get();
+
+        if (earnedExtraRoll) {
+           set({ earnedExtraRoll: false, hasRolled: false, diceValue: null, diceValues: [] });
+           playSound('turn');
+           return;
+        }
+
         const winTokensNeeded = (gameMode === "quick" || gameMode === "blitz") ? 1 : 4;
 
         let nextIdx = (turnIndex + 1) % players.length;
@@ -324,7 +354,7 @@ export const useGameStore = create<LudoState>()(
       joinRoom: (roomId) => set({ roomId }),
 
       saveGame: (name) => {
-        const { gameState, gameMode, isTeamMode, players, turnIndex, diceValues, diceValue, hasRolled, winner, savedGames } = get();
+        const { gameState, gameMode, isTeamMode, players, turnIndex, diceValues, diceValue, hasRolled, winner, savedGames, earnedExtraRoll } = get();
         const newState: Partial<LudoState> = {
           gameState,
           gameMode,
@@ -334,7 +364,8 @@ export const useGameStore = create<LudoState>()(
           diceValues,
           diceValue,
           hasRolled,
-          winner
+          winner,
+          earnedExtraRoll
         };
         const newSavedGames = [...savedGames.filter(g => g.name !== name), {
           name,

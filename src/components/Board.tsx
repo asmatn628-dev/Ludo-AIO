@@ -97,38 +97,6 @@ export function Board() {
   return (
     <div className="relative w-full aspect-square max-w-[650px] shadow-2xl rounded-2xl bg-slate-900 mx-auto select-none" onClick={() => setSelectedOptions(null)}>
       
-      {/* Game Controls Overlay */}
-      <div className="absolute -top-12 left-0 right-0 flex justify-between items-center px-2 z-[60]">
-        <div className="flex gap-2">
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              const name = prompt("Enter a name for this save:", `Game ${new Set(players.filter(p=>p.isActive).map(p=>p.name)).size} Players`);
-              if (name) {
-                useGameStore.getState().saveGame(name);
-                alert("Game saved!");
-              }
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700 text-white rounded-lg text-xs font-bold border border-slate-600 transition-colors"
-          >
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path><path d="M17 21v-8H7v8M7 3v5h8"></path></svg>
-            SAVE
-          </button>
-        </div>
-        <button 
-          onClick={(e) => {
-            e.stopPropagation();
-            if (confirm("Exit to main menu? Your current progress might be lost if unsaved.")) {
-              useGameStore.getState().setGameState('menu');
-            }
-          }}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-xs font-bold border border-red-500 transition-colors"
-        >
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-          EXIT
-        </button>
-      </div>
-
       {/* SVG Board Base */}
       <svg viewBox="0 0 150 150" className="w-full h-full bg-white">
         

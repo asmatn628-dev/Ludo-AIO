@@ -49,6 +49,7 @@ export interface Player {
   name: string;
   botDifficulty?: 'easy' | 'medium' | 'hard';
   hasKilled: boolean; // For Master mode
+  rank?: number | null;
 }
 
 export type GameMode = "classic" | "quick" | "blitz" | "master";

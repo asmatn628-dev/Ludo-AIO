@@ -215,7 +215,36 @@ export function Menu() {
 
       <LoadGameSection />
 
-      <div className="mt-8 text-center bg-blue-50 p-4 rounded-xl border border-blue-100">
+      <div className="mt-8 bg-slate-100 p-4 rounded-xl border border-slate-200">
+         <h3 className="font-bold text-slate-800 text-sm mb-2 flex items-center gap-1.5">
+           <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+           Android Mobile Installation
+         </h3>
+         <div className="space-y-4">
+            <div className="bg-white p-3 rounded-lg border border-slate-200">
+               <p className="text-[10px] font-bold text-slate-700 mb-1">Method 1: Auto-Build APK via GitHub (Best for Mobile)</p>
+               <ol className="text-[9px] text-slate-600 list-decimal ml-4 space-y-0.5">
+                  <li>In this AI Studio, click the <b>Settings Gear</b> (top right) &gt; <b>Export to GitHub</b>.</li>
+                  <li>Go to your new GitHub repository.</li>
+                  <li>Create a new directory called <b>.github/workflows</b>.</li>
+                  <li>Move the <b>build-apk.yml</b> file from the <b>github_actions_template</b> folder into your new <b>.github/workflows</b> folder.</li>
+                  <li>Tap the <b>Actions</b> tab. You will see "Build Android APK" running.</li>
+                  <li>Once it turns green (about 2 mins), tap it, scroll down to <b>Artifacts</b>, and download <b>app-debug.apk</b>!</li>
+               </ol>
+            </div>
+            
+            <div className="bg-white p-3 rounded-lg border border-slate-200">
+               <p className="text-[10px] font-bold text-slate-700 mb-1">Method 2: Quick PWA (No install needed)</p>
+               <ol className="text-[9px] text-slate-600 list-decimal ml-4 space-y-0.5">
+                  <li>Click the <b>"Open in new tab"</b> icon at the top right of this screen.</li>
+                  <li>In Chrome, tap the <b>three dots (⋮)</b>.</li>
+                  <li>Tap <b>"Install app"</b> or "Add to Home screen".</li>
+               </ol>
+            </div>
+         </div>
+      </div>
+
+      <div className="mt-4 text-center bg-blue-50 p-4 rounded-xl border border-blue-100">
          <h4 className="font-bold text-blue-800 text-sm mb-1">TV & Mobile Ready</h4>
          <p className="text-xs text-blue-600 leading-tight">
             Use your TV remote (D-pad) or touch/mouse to interact. <br/> 
